@@ -28,7 +28,22 @@ jobs:
         context: .
         file: ./Dockerfile
         push: true
-        tags: devaharshap/cicd-app:latest
+        tags: devaharshap6/cicd-app:latest  # you had a small typo: use your correct DockerHub ID here
+
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'latest'
+
+    - name: Set up kubeconfig
+      run: |
+        mkdir -p ~/.kube
+        echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > ~/.kube/config
+
+    - name: Deploy to Kubernetes
+      run: |
+        kubectl apply -f deployment.yaml
+        kubectl apply -f service.yaml
 
     - name: Slack Notification (on Success)
       if: success()
@@ -37,7 +52,7 @@ jobs:
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
         SLACK_COLOR: good
         SLACK_TITLE: "✅ CI/CD Success!"
-        SLACK_MESSAGE: "Your Docker image has been pushed successfully."
+        SLACK_MESSAGE: "Your Docker image has been pushed and deployed to Kubernetes."
 
     - name: Slack Notification (on Failure)
       if: failure()
