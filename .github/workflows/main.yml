@@ -28,7 +28,7 @@ jobs:
         context: .
         file: ./Dockerfile
         push: true
-        tags: devaharshap6/cicd-app:latest
+        tags: devaharshap/cicd-app:latest
 
     - name: Slack Notification (on Success)
       if: success()
